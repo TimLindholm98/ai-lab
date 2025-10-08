@@ -23,7 +23,7 @@ collection = client.create_collection(name="docs")
 
 #print("Generating embeddings", end="")
 for i, d in enumerate(documents):
-    response = ollama.embed(model="mxbai-embed-large", input=d)
+    response = ollama.embed(model="nomic-embed-text", input=d)
     embeddings = response["embeddings"]
     collection.add(
         ids=[str(i)],
@@ -39,14 +39,13 @@ for i, d in enumerate(documents):
 # generate an embedding for the input and retrieve the most relevant doc
 #print("Generating embedding for the input", end="")
 response = ollama.embed(
-    model="mxbai-embed-large",
+    model="nomic-embed-text",
     input=input
 )
 #print(" Done!")
 #print("Retrieving the most relevant docs", end="")
 results = collection.query(
     query_embeddings=response["embeddings"],
-    #n_results=4000
     n_results=len(documents)
 )
 #print(" Done!")
@@ -55,7 +54,7 @@ data = results['documents'][0][0]
 # generate a response combining the prompt and data we retrieved in step 2
 #print("Generating response")
 output = ollama.generate(
-    model="deepseek-r1:32b",
+    model="gemma3:4b",
     prompt=f"Using this data: {data}. Respond to this prompt: {input}"
 )
 
