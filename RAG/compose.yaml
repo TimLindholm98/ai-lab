@@ -1,16 +1,7 @@
 services:
-  app:
-    build: .
-    restart: no
-    container_name: app
-    volumes:
-      - ./documents:/app/documents
-    command: ["python", "main.py"]
-    network_mode: host
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   container_name: ollama
-  #   ports:
-  #     - "11434:11434"
-  #   volumes:
-  #     - ./ollama_data:/root/.ollama
+  valkey:
+    image: valkey/valkey
+    container_name: valkey
+    ports:
+      - 6379:6379
+    

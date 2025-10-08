@@ -28,24 +28,8 @@ for i, d in enumerate(create_collection("industrial_society_and_its_future.txt")
         ids=[str(i)],
         embeddings=embeddings,
         documents=[d],
-        metadatas=[{
-            "author": "Ted Kaczynski",
-            "document_name": "Industrial Society and Its Future"
-        }]
     )
 
-for i, d in enumerate(create_collection("thelastquestion.txt")):
-    response = ollama.embed(model="mxbai-embed-large", input=d)
-    embeddings = response["embeddings"]
-    collection.add(
-        ids=[str(i)],
-        embeddings=embeddings,
-        documents=[d],
-        metadatas=[{
-            "author": "Isaac Asimov",
-            "document_name": "The Last Question"
-        }]
-    )
 
 #######################
 #   Step 2: Retrieve  #
@@ -59,21 +43,24 @@ response = ollama.embed(
 
 results = collection.query(
     query_embeddings=response["embeddings"],
-    n_results=500
+    n_results=100
 )
 
+# Step 1: Extract the INNER lists using the [0] index
 ids = results['ids'][0]
 documents = results['documents'][0]
 
-combined = list(zip(ids, documents, metadatas, distances))
-sorted_results = sorted(combined, key=lambda item: int(item[0]))
-
-#print(results)
+# Now zip will work correctly, creating pairs of (id, document)
+combined_results = list(zip(ids, documents))
+# And the sort will work because item[0] is now a string like '1417'
+sorted_combined_results = sorted(combined_results, key=lambda item: int(item[0]))
+# Step 4: Create a NEW list containing only the documents, in the new sorted order
+sorted_documents = [doc for id, doc in sorted_combined_results]
 
 output = ollama.generate(
    model="mistral:7b",
    prompt=f"""Answer the query strictly referring the provided context:
-     {sorted_results["documents"]}
+     {sorted_documents}
      Query:
      {input}
      In case you don't have any answer from the context provided, just say:
@@ -81,3 +68,6 @@ output = ollama.generate(
 )
 
 print(output["response"])
+
+
+
