@@ -1,4 +1,3 @@
 .DS_Store
-ollama_data/
-RAG/not_used/
+milvus/volumes/
 .vscode/settings.json

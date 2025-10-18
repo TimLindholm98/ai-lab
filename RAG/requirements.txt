@@ -1,3 +1,0 @@
-ollama
-chromadb
-qdrant-client
